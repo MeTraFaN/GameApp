@@ -1,24 +1,25 @@
-var arr = new Array(42);
+let arr = new Array(42);
 var stage = new createjs.Stage("canvas");
-var body = document.querySelector('body');
+let body = document.querySelector('body');
 var canvas = document.querySelector('canvas');
-var sidebar = document.querySelector('.sidebar');
-var canvascubes = document.getElementById('showboard');
-var rolldice = document.getElementById('rolldice');
-var rotateshape = document.getElementById('rotateshape');
-var textturn = document.getElementById('textturn');
-var texthint = document.getElementById('texthint');
+let sidebar = document.querySelector('.sidebar');
+let canvascubes = document.getElementById('showboard');
+let rolldice = document.getElementById('rolldice');
+let rotateshape = document.getElementById('rotateshape');
+let textturn = document.getElementById('textturn');
+let texthint = document.getElementById('texthint');
 
 var ctx = canvascubes.getContext('2d');
 
 var diceTrown = false;
-var playerOne = false;
-var playerTwo = false;
 var playerOneBlocks = new Array(1);
-var yourturn = true;
+var wichTurn, blockColor = '';
+
+let stalkingBlock, instalationBlock;
 
 let CWidth = 798; 
-let CHeight = 627; 
+let CHeight = 627;
+let coursorX, coursorY = 0;
 var socket = io();
 
 let f,s;
@@ -34,132 +35,51 @@ ctx.strokeRect(210,50,114,114);
 
 //end
 
-init();
-
 socket.on('showerrore', function(massage){
 	ShowErrore(massage);
 });
 socket.on('deleteerrore', function(){
 	deleteElement(ErroreWindow);
 });
-socket.on('opponentturn', function(turn, hint){
+socket.on('turn', function(turn, hint, id){
+	if (turn[0] === 'N') {
+		rolldice.addEventListener('click', rollDice, false);
+		rotateshape.addEventListener('click', rotateShape, false);
+		canvas.addEventListener('mousemove', mouseMoveOnCanvas, false);
+	} else {
+		rolldice.removeEventListener('click', rollDice, false);
+		rotateshape.removeEventListener('click', rotateShape, false);
+	}
+	if (id === 0) {
+		wichTurn = 0;
+		blockColor = "green";
+	} else {
+		wichTurn = 1;
+		blockColor = "red";
+	}
 	textturn.innerHTML = turn;
 	texthint.innerHTML = hint;
-	rolldice.removeEventListener('click', rollDice, false);
-	rotateshape.removeEventListener('click', rotateshape, false);
-})
-
-socket.on('clientinfo', function(client){ console.log(client)})
-
-
-//mousemove on canvas
-
-function init(){
-	rolldice.addEventListener('click', rollDice);
-	rotateshape.addEventListener('click', rotateshape);
-}
-
-
-body.addEventListener('mousemove', function(evt){
-	coursorX = evt.pageX;
-	coursorY = evt.pageY;
-
-	if(diceTrown){
-		if (playerOne){
-				if(typeof stalkingBlock == "undefined"){ // обработчик изменения движения квадратов
-					stalkingBlock = new createjs.Shape();
-					instalationBlock = new createjs.Shape();
-					createRect(f,s, stalkingBlock, "green", 0.75, 1);
-					createRect(f,s, instalationBlock, "green", 1, 0);		
-				}
-				else {
-					getACenterOfBlock(stalkingBlock, 1, 0, 0, "1");
-					if(typeof instalationBlock != "undefined")
-						getACenterOfBlock(instalationBlock, 0, 1, 0, "2");
-				}			
-		}
-		else{ // второй игрок
-
-		}
-
-	} else{ //нужно попросить бросить кубики
-
-	}
-
-})
-//end//
-
-//click on button rolldice
-
-
-function rollDice(){
-	if(yourturn && !diceTrown){
-		f = Math.round(Math.random() * (6 - 1) + 1);
-		s = Math.round(Math.random() * (6 - 1) + 1);
-		showCubes(48,50, f);
-		showCubes(210,50, s);
-		diceTrown = true;	
-	}
-}
-
-function rotateshape(){
-	if(yourturn){
-		stage.removeChild(stalkingBlock);
-		stage.removeChild(instalationBlock);
-		delete stalkingBlock;
-		delete instalationBlock;
-		stalkingBlock = new createjs.Shape();
-		instalationBlock = new createjs.Shape();
-		createRect(s,f, stalkingBlock, "green", 0.75, 1);
-		createRect(s,f, instalationBlock, "green", 1, 0);	
-		[f, s] = [s, f];
-	}
-}
-
+});
 
 //mouseclick on canvas
 canvas.addEventListener("mousedown", function(){
 	if(typeof instalationBlock != "undefined"){
 		playerOneBlocks[playerOneBlocks.length-1] = new createjs.Shape();
-		createRect(f,s, playerOneBlocks[playerOneBlocks.length-1], "green", 1, 1, coursorX - coursorX % 19, coursorY - coursorY % 19);
+		createRect(f,s, playerOneBlocks[playerOneBlocks.length-1], blockColor, 1, 1, coursorX - coursorX % 19, coursorY - coursorY % 19);
+		getACenterOfBlock(playerOneBlocks[playerOneBlocks.length-1], 1, 0, 1);
 		stage.removeChild(instalationBlock);
-		delete instalationBlock;
-		getACenterOfBlock(playerOneBlocks[playerOneBlocks.length-1], 1, 0, 1);		
+		stage.removeChild(stalkingBlock.text);
+		stage.removeChild(stalkingBlock);
+		stalkingBlock = undefined;
+		instalationBlock = undefined;
 		stage.update();	
 	}
-})
-
-
-function showCubes(x,y,n) {
-	ctx.clearRect(x+1, y+1, 112, 112);
-	let array = new Array(3);
-	array[0] = [];
-	array[1] = [];
-	array[2] = [];
-	switch(n){
-		case 1: array[1][1] = 1; break;
-		case 2: array[0][2] = 1; array[2][0] = 1; break;
-		case 3: array[0][2] = 1; array[1][1] = 1; array[2][0] = 1; break;
-		case 4: array[0][0] = 1; array[0][2] = 1; array[2][0] = 1; array[2][2] = 1; break;
-		case 5: array[0][0] = 1; array[0][2] = 1; array[1][1] = 1; array[2][0] = 1; array[2][2] = 1; break;
-		case 6: array[0][0] = 1; array[0][2] = 1; array[1][0] = 1; array[1][2] = 1; array[2][0] = 1; array[2][2] = 1; break;
-	}
-
-	ctx.beginPath();
-	for(let i = 0; i < 3; i++){
-		for(let j = 0; j < 3; j++){
-			if(array[i][j]){
-				ctx.moveTo(x+23+34*j, y+23+34*i);
-				ctx.arc(x+23+34*j, y+23+34*i, 12, 0, Math.PI*2);
-			}
-		}
-	}
-	ctx.fill();
-	ctx.closePath();
-
-	
-}
-
+	canvas.removeEventListener("mousemove", mouseMoveOnCanvas);
+	socket.emit('endOfTurn', wichTurn);
+	diceTrown = false;
+	ctx.clearRect(49,51,112,112);
+	ctx.clearRect(211,51,112,112);
+});
 //end
 
 //creating a notebook sheet
@@ -172,14 +92,33 @@ function showCubes(x,y,n) {
 		    stage.addChild(arr[i][j]);
 		}
 	}
-	line = new createjs.Shape();
-	line.graphics.beginStroke("#EE2A2A").moveTo(0, 28 * 19).lineTo(42 * 19, 28 * 19);
-	stage.addChild(line);
+		let line = new createjs.Shape();
+		line.graphics.beginStroke("#EE2A2A").moveTo(0, 28 * 19).lineTo(42 * 19, 28 * 19);
+		stage.addChild(line);
 	stage.update();
+
 //end//
 
 
+const mouseMoveOnCanvas = (evt) => {
+	coursorX = evt.pageX;
+	coursorY = evt.pageY;
+	if(diceTrown){
+		if(typeof stalkingBlock == "undefined"){ // обработчик изменения движения квадратов
+			stalkingBlock = new createjs.Shape();
+			instalationBlock = new createjs.Shape();
+			createRect(f,s, stalkingBlock, blockColor, 0.75, 1);
+			createRect(f,s, instalationBlock, blockColor, 1, 0);
+		}
+		else {
+			getACenterOfBlock(stalkingBlock, 1, 0, 0, "1");
+			if(typeof instalationBlock != "undefined")
+				getACenterOfBlock(instalationBlock, 0, 1, 0, "2");
+		}
+	} else{ //нужно попросить бросить кубики
 
+	}
+};
 
 
 function createRect(first, second, shape, color, alpha, text, cx, cy){
@@ -198,8 +137,9 @@ function createRect(first, second, shape, color, alpha, text, cx, cy){
 		stage.addChild(shape.text);
 	}
 	stage.addChild(shape);
-	stage.update();		
+	stage.update();
 }
+
 
 function getACenterOfBlock(shape, text, forInstalation, instalated, qwe) {
 	if (!forInstalation && !instalated){ //блок преследователь
@@ -242,15 +182,64 @@ function getACenterOfBlock(shape, text, forInstalation, instalated, qwe) {
 					shape.text.y = shape.y + s * 2;
 				}
 			}
-		 	else { //2,2; 2,3; 2,4; 3,2; 3,3; 4,2
+			else { //2,2; 2,3; 2,4; 3,2; 3,3; 4,2
 				shape.text.x = shape.x + f * 19 / 2 - 4.5;
 				shape.text.y = shape.y + s * 19 / 2 - 7.5;
 			}
 		}
-	}	
+	}
 
-	stage.update();	
+	stage.update();
 }
 
 
-//1. написать серверную часть: разграничения по ходам
+const rollDice = () => {
+	if(!diceTrown){
+		f = Math.round(Math.random() * (6 - 1) + 1);
+		s = Math.round(Math.random() * (6 - 1) + 1);
+		showCubes(48,50, f);
+		showCubes(210,50, s);
+		diceTrown = true;
+	}
+};
+
+function rotateShape(){
+	stage.removeChild(stalkingBlock);
+	stage.removeChild(stalkingBlock.text);
+	stage.removeChild(instalationBlock);
+	stalkingBlock = undefined;
+	instalationBlock = undefined;
+	stalkingBlock = new createjs.Shape();
+	instalationBlock = new createjs.Shape();
+	createRect(s,f, stalkingBlock, blockColor, 0.75, 1);
+	createRect(s,f, instalationBlock, blockColor, 1, 0);
+	[f, s] = [s, f];
+}
+function showCubes(x,y,n) {
+	ctx.clearRect(x+1, y+1, 112, 112);
+	let array = new Array(3);
+	array[0] = [];
+	array[1] = [];
+	array[2] = [];
+	switch(n){
+		case 1: array[1][1] = 1; break;
+		case 2: array[0][2] = 1; array[2][0] = 1; break;
+		case 3: array[0][2] = 1; array[1][1] = 1; array[2][0] = 1; break;
+		case 4: array[0][0] = 1; array[0][2] = 1; array[2][0] = 1; array[2][2] = 1; break;
+		case 5: array[0][0] = 1; array[0][2] = 1; array[1][1] = 1; array[2][0] = 1; array[2][2] = 1; break;
+		case 6: array[0][0] = 1; array[0][2] = 1; array[1][0] = 1; array[1][2] = 1; array[2][0] = 1; array[2][2] = 1; break;
+	}
+
+	ctx.beginPath();
+	for(let i = 0; i < 3; i++){
+		for(let j = 0; j < 3; j++){
+			if(array[i][j]){
+				ctx.moveTo(x+23+34*j, y+23+34*i);
+				ctx.arc(x+23+34*j, y+23+34*i, 12, 0, Math.PI*2);
+			}
+		}
+	}
+	ctx.fill();
+	ctx.closePath();
+}
+
