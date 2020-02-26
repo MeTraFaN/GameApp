@@ -1,0 +1,67 @@
+<!doctype html>
+<html>  
+  <head>  
+    <script src="https://code.createjs.com/easeljs-0.8.0.min.js"> </script>
+    <script src="https://code.createjs.com/tweenjs-0.6.2.min.js"> </script>
+    <script src="https://cdn.socket.io/socket.io-1.2.0.js"> </script>
+    <link href="/main.css" rel="stylesheet">
+<!--    <meta name="viewport"  content="width=device-width, initial-scale=1.0, user-scalable=no">-->
+    <title>Disappearing Tail</title>
+  </head> 
+  <body>
+    <canvas id="canvas" width = "798px" height="627px"></canvas>
+    <div class="sidebar">
+      <div class="sidebarboxes">
+        <div class="divturn">
+          <div id="textturn"></div>
+          <div id="texthint"></div>
+        </div>
+      </div>
+      <div class="sidebarboxes">
+        <div class="scorebox">
+          <div> The score </div>
+          <div class="scorenumbers"> 
+            <div class="players"> 
+              <div class="playerscore">
+                0
+              </div> 
+            </div>
+            <div class="players"> 
+              <div class="playerscore"> 
+                0
+              </div>
+            </div>
+           </div> 
+       </div>
+      </div>
+      <div class="sidebarboxes">
+        <div class="buttonbox" id="rolldice" onmousedown="return false" onselectstart="return false">
+         Roll the Dice
+        </div>
+      </div>
+      <div class="sidebarboxes"> 
+        <div class="cubes">
+          <canvas id="showboard" width="368" height="217"></canvas>
+        </div>
+      </div>
+      <div class="sidebarboxes"> 
+        <div class="buttonbox" id="rotateshape" onmousedown="return false" onselectstart="return false">
+          Повернуть фигуру
+        </div>
+      </div>
+      
+    </div>
+   <!--  <div class="DialogWindow"> 
+      <div id="parent">
+        <div class="firstbutton navigate">
+            <button id="create"> Создать доску </button>
+        </div>
+        <div class="secondbutton navigate">
+            <button id="join"> Присоединиться </button>
+        </div>
+      </div>
+    </div> -->
+    <script src="/main.js"> </script>
+    <script src="/second.js"> </script>
+  </body>
+</html>

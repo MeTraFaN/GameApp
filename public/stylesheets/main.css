@@ -1,0 +1,187 @@
+body {padding:0px; margin:0px; overflow: hidden; background-color: #EDEEF0;}
+#wrapper {background-color: lightblue; width: 1300px; height: 600px;}
+.circle{position: absolute;border-radius:50%;}
+.circle .circle {position:fixed; opacity: 1;}
+.circle .circle.opacityT {
+    animation: mymove 1s;
+    animation-fill-mode: forwards;
+ }
+@keyframes mymove {
+    0%   {opacity: 1;
+    visibility: visible;}
+    100% {opacity: 0;
+    visibility: hidden;}
+}
+ 
+
+.DialogWindow {
+    position: absolute;
+    width: 290px;
+    height: 200px;
+    left: 50%;
+    top: 50%;
+    margin-left: -156px;
+    margin-top: -100px;
+    background: #fc0; 
+    border: solid 1px black; 
+    padding: 10px; 
+    overflow: auto; 
+    background-color: lightblue}
+#parent {margin: 30px;  background-color: yellow; height: 70%;}
+.navigate { height: 25%;  margin: auto;}
+.firstbutton {width: 105px; height: 35px;}
+.secondbutton{width: 118px;}
+.inputdiv {width:119px}
+.submitdiv {width:119px}
+.navigate > * { margin: 7px 0px;}
+.create {margin: 7px 7px; height: 21px;}
+#canvas {float:left; background-color: #E8F6FB; cursor: default;     border-radius: 2px;
+    box-shadow: 0 1px 0 0 #d7d8db, 0 0 0 1px #e3e4e8;}
+.ErroreWindow  {position: absolute;
+    width: 300px;
+    height: 35px;   
+    margin: auto;
+    top: 0; left: 0; bottom: 0; right: 0;
+    background-color: #e5ebf1;
+    text-align: center;
+    border-radius: 2px;
+    box-shadow: 0 1px 0 0 #d7d8db, 0 0 0 1px #e3e4e8;
+    font-family: -apple-system,BlinkMacSystemFont,Roboto,Helvetica Neue,sans-serif;
+    padding: 15px;
+}
+.ErroreText  {position: absolute;
+    width: 170px;
+    left: 50%;
+    top: 10%;
+    margin-left: -95px;
+    margin-top: -25px;
+    border: solid 1px black;
+    padding: 10px;
+    background-color: #FA8072;
+    opacity: 1;
+}
+#score{
+    position: absolute;
+    width:200px;
+    height: 100px;
+    left:20px;
+    top:20px;
+    border: solid 2px #fff;
+    border-radius: 20px;
+}
+.numbers, .score{
+    position: absolute;
+    margin: 0;
+    font-weight:700;
+    color: #fff;
+    font-size:76px;
+    line-height: normal;
+}
+#left{ left:30px; top: 10px;}
+#right{ right: 30px; top: 10px;}
+.score {left:85px; top: 0;}
+.RoomName {
+    position: absolute;
+    background-color: #fff;
+    right:30px;
+    top:10px;
+    width:100px;
+    height: 15px;
+    border: 2px solid blue;
+    text-align: center;
+}
+.cell{
+    border:2px solid #fff;
+    border-radius: 50px;
+    margin: 7.5px;
+    float:left;
+}
+.Value {
+    text-align: center;
+}
+#stat div {
+    float:left;
+    margin: 0 15px;
+}
+#line {
+    position:absolute;
+}
+
+
+.sidebar{
+    min-width: 273px;
+    float:left;
+    margin:20px 50px 0 50px;
+    background-color:white;
+    border-radius: 2px;
+    box-shadow: 0 1px 0 0 #d7d8db, 0 0 0 1px #e3e4e8;
+    height: 85px;
+}
+.sidebarboxes{
+    margin: 20px 0 20px 0;
+    height: 76px;
+    width: 468px;
+    border-bottom: solid #e7e8ec 1px;
+}
+
+.sidebarboxes:nth-child(4){
+    height: 240px;
+}
+.sidebarboxes:nth-child(3), .sidebarboxes:nth-child(5){
+    height: 56px;
+}
+
+.divturn{
+    height: 77px;
+    width: 468px;
+}
+
+.divturn > *{
+    text-align: center;
+    line-height: 28.5px;
+    font-size: 25px;
+    font-family: sans-serif;
+}
+
+.buttonbox {
+    height: 35px;
+    width: 368px;
+    margin: 0px 50px 0 50px;
+    background-color: #e5ebf1;
+    border-radius: 2px;
+    box-shadow: 0 1px 0 0 #d7d8db, 0 0 0 1px #e3e4e8;
+    font-family: -apple-system,BlinkMacSystemFont,Roboto,Helvetica Neue,sans-serif;
+    text-align: center;
+    line-height: 35px;
+
+}
+.buttonbox:hover {
+    cursor: pointer;
+    padding-top: 2px;
+    height: 33px;
+}
+
+.scorebox{
+    height: 100%;
+    width: 468px;
+    text-align: center;
+    line-height: 25px;
+    font-size: 25px;
+    font-family: sans-serif;
+}
+
+
+.players{
+    margin: 10px 0px;
+    float: left;
+    width: 50%;
+}
+.players:first-child{
+    color:blue;
+}
+.players:last-child{
+    color:red;
+}
+.cubes {
+    margin:0 50px;
+}
