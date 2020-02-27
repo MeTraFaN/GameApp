@@ -104,7 +104,6 @@ const mouseMoveOnCanvas = (evt) => {
 	coursorX = evt.pageX;
 	coursorY = evt.pageY;
 	if(diceTrown){
-		console.log(stalkingBlock)
 		if(typeof stalkingBlock == "undefined"){ // обработчик изменения движения квадратов
 			stalkingBlock = new createjs.Shape();
 			instalationBlock = new createjs.Shape();
@@ -212,8 +211,8 @@ function rotateShape(){
 	instalationBlock = undefined;
 	stalkingBlock = new createjs.Shape();
 	instalationBlock = new createjs.Shape();
-	createRect(s,f, stalkingBlock, "green", 0.75, 1);
-	createRect(s,f, instalationBlock, "green", 1, 0);
+	createRect(s,f, stalkingBlock, blockColor, 0.75, 1);
+	createRect(s,f, instalationBlock, blockColor, 1, 0);
 	[f, s] = [s, f];
 }
 function showCubes(x,y,n) {
