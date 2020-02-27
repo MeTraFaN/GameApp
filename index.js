@@ -20,9 +20,9 @@ app.get('/app', function(req, res){
 });
 
 function user(id, textid){
-    this.id = id;
-    this.textid = textid;
-    this.score = 0;
+  this.id = id;
+  this.textid = textid;
+  this.score = 0;
 }
 
 io.on('connection', function(client) {

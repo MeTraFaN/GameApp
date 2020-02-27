@@ -17,7 +17,7 @@ var wichTurn, blockColor = '';
 
 let stalkingBlock, instalationBlock;
 
-let CWidth = 798; 
+let CWidth = 798;
 let CHeight = 627;
 let coursorX, coursorY = 0;
 var socket = io();
@@ -72,7 +72,7 @@ canvas.addEventListener("mousedown", function(){
 		stage.removeChild(stalkingBlock);
 		stalkingBlock = undefined;
 		instalationBlock = undefined;
-		stage.update();	
+		stage.update();
 	}
 	canvas.removeEventListener("mousemove", mouseMoveOnCanvas);
 	socket.emit('endOfTurn', wichTurn);
