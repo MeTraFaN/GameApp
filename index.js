@@ -4,7 +4,7 @@ const io = require('socket.io')(http);
 const port = process.env.PORT || 4000;
 
 let players = {};
-//var countPlayers = 0;
+const playersBlocks = [{},{}];
 
 app.get('/main.css', function(req, res){
   res.sendFile(__dirname + '/public/stylesheets/main.css');
@@ -20,9 +20,9 @@ app.get('/app', function(req, res){
 });
 
 function user(id, textid){
-    this.id = id;
-    this.textid = textid;
-    this.score = 0;
+  this.id = id;
+  this.textid = textid;
+  this.score = 0;
 }
 
 io.on('connection', function(client) {
@@ -45,11 +45,17 @@ io.on('connection', function(client) {
   }
 
 
-  client.on('endOfTurn', player => {
+  client.on('endOfTurn', (player, f, s, x, y) => {
     let diferentPlayer;
+    players[player].score += f*s;
+
     player === 0 ? diferentPlayer = 1 : diferentPlayer = 0;
+    io.sockets.connected[players[diferentPlayer].textid].emit('drawEnemyBlock', player, f, s, x, y);
     io.sockets.connected[players[diferentPlayer].textid].emit('turn', "Now your turn", "You need roll the dice", diferentPlayer);
     io.sockets.connected[players[player].textid].emit('turn', "Your opponent turn", "Wait until it`s end.", player);
+
+    client.broadcast.emit('changeScore', player, players[player].score);
+    client.emit('changeScore', player, players[player].score);
   });
 
   client.on('disconnect', function () {

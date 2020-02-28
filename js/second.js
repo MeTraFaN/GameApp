@@ -1,23 +1,27 @@
 let arr = new Array(42);
-var stage = new createjs.Stage("canvas");
+stage = new createjs.Stage("canvas");
+stage.enableMouseOver(5000);
 let body = document.querySelector('body');
-var canvas = document.querySelector('canvas');
+const canvas = document.querySelector('canvas');
 let sidebar = document.querySelector('.sidebar');
 let canvascubes = document.getElementById('showboard');
 let rolldice = document.getElementById('rolldice');
 let rotateshape = document.getElementById('rotateshape');
 let textturn = document.getElementById('textturn');
 let texthint = document.getElementById('texthint');
+let LeftScore = document.getElementsByClassName('playerOneScore')[0];
+let RightScore = document.getElementsByClassName('playerTwoScore')[0];
 
-var ctx = canvascubes.getContext('2d');
 
-var diceTrown = false;
-var playerOneBlocks = new Array(1);
-var wichTurn, blockColor = '';
+const ctx = canvascubes.getContext('2d');
+
+let diceTrown = false;
+let playersBlocks = [{},{}];
+let wichTurn, blockColor = '';
 
 let stalkingBlock, instalationBlock;
 
-let CWidth = 798; 
+let CWidth = 798;
 let CHeight = 627;
 let coursorX, coursorY = 0;
 var socket = io();
@@ -52,7 +56,7 @@ socket.on('turn', function(turn, hint, id){
 	}
 	if (id === 0) {
 		wichTurn = 0;
-		blockColor = "green";
+		blockColor = "blue";
 	} else {
 		wichTurn = 1;
 		blockColor = "red";
@@ -64,41 +68,49 @@ socket.on('turn', function(turn, hint, id){
 //mouseclick on canvas
 canvas.addEventListener("mousedown", function(){
 	if(typeof instalationBlock != "undefined"){
-		playerOneBlocks[playerOneBlocks.length-1] = new createjs.Shape();
-		createRect(f,s, playerOneBlocks[playerOneBlocks.length-1], blockColor, 1, 1, coursorX - coursorX % 19, coursorY - coursorY % 19);
-		getACenterOfBlock(playerOneBlocks[playerOneBlocks.length-1], 1, 0, 1);
+		playersBlocks[wichTurn][Object.keys(playersBlocks[wichTurn]).length] = new createjs.Shape();
+		createRect(f,s, playersBlocks[wichTurn][Object.keys(playersBlocks[wichTurn]).length-1], blockColor, 1, 1, coursorX - coursorX % 19, coursorY - coursorY % 19);
+		getACenterOfBlock(playersBlocks[wichTurn][Object.keys(playersBlocks[wichTurn]).length-1], 1, 0, 1);
+		playersBlocks[wichTurn][Object.keys(playersBlocks[wichTurn]).length-1].addEventListener('mouseover', mouseOverBlocks);
 		stage.removeChild(instalationBlock);
 		stage.removeChild(stalkingBlock.text);
 		stage.removeChild(stalkingBlock);
 		stalkingBlock = undefined;
 		instalationBlock = undefined;
-		stage.update();	
+		stage.update();
 	}
 	canvas.removeEventListener("mousemove", mouseMoveOnCanvas);
-	socket.emit('endOfTurn', wichTurn);
 	diceTrown = false;
 	ctx.clearRect(49,51,112,112);
 	ctx.clearRect(211,51,112,112);
+	socket.emit('endOfTurn', wichTurn, f, s,
+		playersBlocks[wichTurn][Object.keys(playersBlocks[wichTurn]).length-1].x,
+		playersBlocks[wichTurn][Object.keys(playersBlocks[wichTurn]).length-1].y,
+	);
 });
 //end
 
 //creating a notebook sheet
-
-	for (var i = 0; i < 42; i++){
-		arr[i] = new Array(33);
-		for (var j = 0; j < 33; j++) {
-		    arr[i][j] = new createjs.Shape();
-			arr[i][j].graphics.beginStroke("#9FD0EB").drawRect(i*19, j*19, 19, 19);
-		    stage.addChild(arr[i][j]);
-		}
+for (var i = 0; i < 42; i++){
+	arr[i] = new Array(33);
+	for (var j = 0; j < 33; j++) {
+		arr[i][j] = new createjs.Shape();
+		arr[i][j].graphics.beginStroke("#9FD0EB").drawRect(i*19, j*19, 19, 19);
+		stage.addChild(arr[i][j]);
 	}
-		let line = new createjs.Shape();
-		line.graphics.beginStroke("#EE2A2A").moveTo(0, 28 * 19).lineTo(42 * 19, 28 * 19);
-		stage.addChild(line);
-	stage.update();
+}
+let line = new createjs.Shape();
+line.graphics.beginStroke("#EE2A2A").moveTo(0, 28 * 19).lineTo(42 * 19, 28 * 19);
+stage.addChild(line);
+stage.update();
 
 //end//
 
+
+const mouseOverBlocks = (evt) => {
+	console.log('qweq');
+	console.log(evt);
+};
 
 const mouseMoveOnCanvas = (evt) => {
 	coursorX = evt.pageX;
@@ -243,3 +255,20 @@ function showCubes(x,y,n) {
 	ctx.closePath();
 }
 
+socket.on('changeScore', (player, playerScore) => {
+	player === 0 ? LeftScore.innerHTML = playerScore : RightScore.innerHTML = playerScore;
+});
+
+socket.on('drawEnemyBlock', (player, f, s, x, y) => {
+	console.log()
+	createRect(f,s, playersBlocks[player][Object.keys(playersBlocks[player]).length-1], blockColor, 1, 1, x, y);
+});
+
+// нужно написать, чтобы блоки ренедерелись на сервере и переписать пол логики ((9
+
+// написать ограничения, чтобы при наведении на существующий блок блок для устновки обтекал его
+//  - при установки блока ставить на него ивент листенер mouseover и проверять, если мышка зашла
+//    на существующий блок, значит высчитывать координаты coursorX & coursorY с погрешностью ширины
+//    и высоты этого блока. Если блок первого игрока - значит х и у блока для установки будет больше
+//    х и у на ширину блока, на который навели. Если же блок второго игрока - значит блок для установки
+//    будет иметь х и у меньше, чем координаты наведенного блока на высоту и ширину этого блока. всв
