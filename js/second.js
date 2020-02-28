@@ -164,31 +164,9 @@ function getACenterOfBlock(shape, text, forInstalation, instalated, qwe) {
 			shape.y = coursorY - coursorY % 19;
 		}
 	}
-
 	if (text){
-		if (f * s > 9){
-			shape.text.x = (shape.x + (shape.x + f * 19)) / 2 - 8.5;
-			shape.text.y = (shape.y + (shape.y + s * 19)) / 2 - 8.5;
-		} else {
-			if (f == 1 || s == 1) { //если один из кубиков показал 1
-				if (f == 1 && s == 1){
-					shape.text.x = shape.x + f * 4.25;
-					shape.text.y = shape.y + s * 2;
-				} else if(f == 1){
-					shape.text.x = shape.x + f * 4.5;
-					shape.text.y = (shape.y + (shape.y + s * 19)) / 2 - 8.5;
-				} else{
-					shape.text.x = (shape.x + (shape.x + f * 19)) / 2 - 5;
-					shape.text.y = shape.y + s * 2;
-				}
-			}
-			else { //2,2; 2,3; 2,4; 3,2; 3,3; 4,2
-				shape.text.x = shape.x + f * 19 / 2 - 4.5;
-				shape.text.y = shape.y + s * 19 / 2 - 7.5;
-			}
-		}
+		createText(shape)
 	}
-
 	stage.update();
 }
 
@@ -243,5 +221,55 @@ function showCubes(x,y,n) {
 	ctx.closePath();
 }
 
+function createText(shape, first, second) {
+	let First = first || f;
+	let Second = second || s;
+	if (First * Second > 9){
+		shape.text.x = (shape.x + (shape.x + First * 19)) / 2 - 8.5;
+		shape.text.y = (shape.y + (shape.y + Second * 19)) / 2 - 8.5;
+	} else {
+		if (First == 1 || Second == 1) { //если один из кубиков показал 1
+			if (First == 1 && Second == 1){
+				shape.text.x = shape.x + First * 4.25;
+				shape.text.y = shape.y + Second * 2;
+			} else if(First == 1){
+				shape.text.x = shape.x + First * 4.5;
+				shape.text.y = (shape.y + (shape.y + Second * 19)) / 2 - 8.5;
+			} else{
+				shape.text.x = (shape.x + (shape.x + First * 19)) / 2 - 5;
+				shape.text.y = shape.y + Second * 2;
+			}
+		}
+		else { //2,2; 2,3; 2,4; 3,2; 3,3; 4,2
+			shape.text.x = shape.x + First * 19 / 2 - 4.5;
+			shape.text.y = shape.y + Second * 19 / 2 - 7.5;
+		}
+	}
+	stage.update();
+};
 
-//надо написать чтобы  с сервера приходил айдишник и он записывался. Дальше определять
+socket.on('changeScore', (player, playerScore) => {
+	player === 0 ? LeftScore.innerHTML = playerScore : RightScore.innerHTML = playerScore;
+});
+
+socket.on('drawEnemyBlock', (player, f, s, x, y) => {
+	playersBlocks[player][Object.keys(playersBlocks[player]).length] = new createjs.Shape();
+	createRect(f,s,
+		playersBlocks[player][Object.keys(playersBlocks[player]).length-1],
+		blockColor === "blue" ? "red" : "blue",
+		1,
+		1,
+		x, y);
+	//getACenterOfBlock(playersBlocks[player][Object.keys(playersBlocks[player]).length-1], 1, 0, 1);
+	createText(playersBlocks[player][Object.keys(playersBlocks[player]).length-1], f,s);
+
+});
+
+
+
+// написать ограничения, чтобы при наведении на существующий блок блок для устновки обтекал его
+//  - при установки блока ставить на него ивент листенер mouseover и проверять, если мышка зашла
+//    на существующий блок, значит высчитывать координаты coursorX & coursorY с погрешностью ширины
+//    и высоты этого блока. Если блок первого игрока - значит х и у блока для установки будет больше
+//    х и у на ширину блока, на который навели. Если же блок второго игрока - значит блок для установки
+//    будет иметь х и у меньше, чем координаты наведенного блока на высоту и ширину этого блока. всв
